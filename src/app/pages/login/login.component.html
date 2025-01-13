@@ -1,45 +1,72 @@
 <div class="login-container">
-  <div class="login-box">
-    <h2>Đăng nhập</h2>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="username">Email</label>
-        <input
-          type="email"
-          id="username"
-          formControlName="username"
-          class="form-control"
-          [ngClass]="{ 'is-invalid': submitted && f['username'].errors }"
-          placeholder="Nhập email của bạn"
-        />
-        <div *ngIf="submitted && f['username'].errors" class="invalid-feedback">
-          <div *ngIf="f['username'].errors['required']">Vui lòng nhập email</div>
-          <div *ngIf="f['username'].errors['email']">Email không đúng định dạng</div>
-        </div>
+  <div class="login-content">
+    <div class="login-box">
+      <div class="logo-container">
+        <img src="https://www.gdufs.edu.cn/images/logo.png" alt="GDUFS Logo" class="logo">
       </div>
+      <h2>Đăng nhập vào hệ thống</h2>
+      <p class="login-subtitle">Vui lòng đăng nhập để tiếp tục</p>
 
-      <div class="form-group">
-        <label for="password">Mật khẩu</label>
-        <input
-          type="password"
-          id="password"
-          formControlName="password"
-          class="form-control"
-          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
-          placeholder="Nhập mật khẩu"
-        />
-        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
-          <div *ngIf="f['password'].errors['required']">Vui lòng nhập mật khẩu</div>
-          <div *ngIf="f['password'].errors['minlength']">Mật khẩu phải có ít nhất 6 ký tự</div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="username">
+            <i class="fas fa-envelope"></i>
+            Email
+          </label>
+          <input
+            type="email"
+            id="username"
+            formControlName="username"
+            class="form-control"
+            [ngClass]="{ 'is-invalid': submitted && f['username'].errors }"
+            placeholder="Nhập email của bạn"
+          />
+          <div *ngIf="submitted && f['username'].errors" class="invalid-feedback">
+            <div *ngIf="f['username'].errors['required']">Vui lòng nhập email</div>
+            <div *ngIf="f['username'].errors['email']">Email không đúng định dạng</div>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <button [disabled]="loading" class="btn btn-primary">
-          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
-          Đăng nhập
-        </button>
-      </div>
-    </form>
+        <div class="form-group">
+          <label for="password">
+            <i class="fas fa-lock"></i>
+            Mật khẩu
+          </label>
+          <div class="password-input">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              class="form-control"
+              [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
+              placeholder="Nhập mật khẩu"
+            />
+            <span class="password-toggle" (click)="togglePasswordVisibility()">
+              <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </span>
+          </div>
+          <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+            <div *ngIf="f['password'].errors['required']">Vui lòng nhập mật khẩu</div>
+            <div *ngIf="f['password'].errors['minlength']">Mật khẩu phải có ít nhất 6 ký tự</div>
+          </div>
+        </div>
+
+        <div class="form-group remember-forgot">
+          <div class="remember-me">
+            <input type="checkbox" id="remember" formControlName="remember">
+            <label for="remember">Ghi nhớ đăng nhập</label>
+          </div>
+          <a href="#" class="forgot-password">Quên mật khẩu?</a>
+        </div>
+
+        <div class="form-group">
+          <button [disabled]="loading" class="btn btn-primary">
+            <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+            <i *ngIf="!loading" class="fas fa-sign-in-alt"></i>
+            Đăng nhập
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

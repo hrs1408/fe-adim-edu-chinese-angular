@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -13,67 +12,64 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   loading = false;
   submitted = false;
-  returnUrl: string;
-  error = '';
+  showPassword = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private toastr: ToastrService
+    private authService: AuthService
   ) {
-    // redirect to home if already logged in
-    if (this.authService.currentUserValue) {
-      this.router.navigate(['/']);
-    }
-
     this.loginForm = this.formBuilder.group({
       username: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      remember: [false]
     });
   }
 
-  ngOnInit() {
-    // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+  ngOnInit(): void {
+    // Kiểm tra nếu có thông tin đăng nhập được lưu
+    const savedUsername = localStorage.getItem('rememberedUsername');
+    if (savedUsername) {
+      this.loginForm.patchValue({
+        username: savedUsername,
+        remember: true
+      });
+    }
   }
 
-  get f() { return this.loginForm.controls; }
+  get f() {
+    return this.loginForm.controls;
+  }
 
-  onSubmit() {
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  onSubmit(): void {
     this.submitted = true;
-    this.error = '';
 
     if (this.loginForm.invalid) {
-      if (this.f['username'].errors?.['required']) {
-        this.toastr.error('Vui lòng nhập email', 'Lỗi');
-      } else if (this.f['username'].errors?.['email']) {
-        this.toastr.error('Email không đúng định dạng', 'Lỗi');
-      } else if (this.f['password'].errors?.['required']) {
-        this.toastr.error('Vui lòng nhập mật khẩu', 'Lỗi');
-      } else if (this.f['password'].errors?.['minlength']) {
-        this.toastr.error('Mật khẩu phải có ít nhất 6 ký tự', 'Lỗi');
-      } else {
-        this.toastr.error('Vui lòng điền đầy đủ thông tin', 'Lỗi');
-      }
       return;
     }
 
     this.loading = true;
-    this.authService.login(
-      this.f['username'].value,
-      this.f['password'].value
-    ).subscribe({
-      next: () => {
-        this.toastr.success('Đăng nhập thành công', 'Thành công');
-        this.router.navigate([this.returnUrl]);
-      },
-      error: error => {
-        this.error = error?.message || 'Đăng nhập thất bại';
-        this.toastr.error(this.error, 'Lỗi');
-        this.loading = false;
-      }
-    });
+
+    // Lưu thông tin đăng nhập nếu người dùng chọn "Ghi nhớ đăng nhập"
+    if (this.loginForm.value.remember) {
+      localStorage.setItem('rememberedUsername', this.loginForm.value.username);
+    } else {
+      localStorage.removeItem('rememberedUsername');
+    }
+
+    this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+        error: error => {
+          console.error('Login failed:', error);
+          this.loading = false;
+        }
+      });
   }
 }
