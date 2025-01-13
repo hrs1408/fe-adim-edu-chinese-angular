@@ -1,0 +1,45 @@
+<div class="login-container">
+  <div class="login-box">
+    <h2>Đăng nhập</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Email</label>
+        <input
+          type="email"
+          id="username"
+          formControlName="username"
+          class="form-control"
+          [ngClass]="{ 'is-invalid': submitted && f['username'].errors }"
+          placeholder="Nhập email của bạn"
+        />
+        <div *ngIf="submitted && f['username'].errors" class="invalid-feedback">
+          <div *ngIf="f['username'].errors['required']">Vui lòng nhập email</div>
+          <div *ngIf="f['username'].errors['email']">Email không đúng định dạng</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mật khẩu</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-control"
+          [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
+          placeholder="Nhập mật khẩu"
+        />
+        <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+          <div *ngIf="f['password'].errors['required']">Vui lòng nhập mật khẩu</div>
+          <div *ngIf="f['password'].errors['minlength']">Mật khẩu phải có ít nhất 6 ký tự</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button [disabled]="loading" class="btn btn-primary">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+          Đăng nhập
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
